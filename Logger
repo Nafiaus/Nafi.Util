@@ -1,0 +1,203 @@
+using System;
+using System.IO;
+
+namespace Nafi
+{
+    public class Logger
+    {
+        private const int LOG_RETURN_GOOD = 0;
+        private const int LOG_RETURN_BAD = 1;
+
+        private readonly bool Verbose;
+        private readonly bool Time;
+        public readonly string Path;
+        public readonly string Name;
+        public readonly string FilePath;
+
+        public Logger()
+        {
+            this.Verbose = true;
+            this.Time = true;
+            this.Name = "log.txt";
+            this.Path = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + "NafiLog");
+            this.FilePath = CreatePath();
+            IsVerbose("Initated Logger class.");
+        }
+
+        public Logger(bool verbose)
+        {
+            this.Verbose = verbose;
+            this.Time = true;
+            this.Name = "log.txt";
+            this.Path = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + "NafiLog");
+            this.FilePath = CreatePath();
+            IsVerbose($"Initated Logger class with Verbose = {Verbose}");
+        }
+
+        public Logger(bool verbose, bool time)
+        {
+            this.Verbose = verbose;
+            this.Time = time;
+            this.Name = "log.txt";
+            this.Path = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + "NafiLog");
+            this.FilePath = CreatePath();
+            IsVerbose($"Initated Logger class with Verbose = {Verbose} and Time = {Time}.");
+        }
+
+        public Logger(string name)
+        {
+            this.Verbose = true;
+            this.Time = true;
+            this.Name = name;
+            this.Path = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + "NafiLog");
+            this.FilePath = CreatePath();
+            IsVerbose($"Initated Logger class with Name = {Name}.");
+        }
+
+        public Logger(string name, bool verbose)
+        {
+            this.Verbose = verbose;
+            this.Time = true;
+            this.Name = name;
+            this.Path = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + "NafiLog");
+            this.FilePath = CreatePath();
+            IsVerbose($"Initated Logger class with Name = {Name} and Verbose = {Verbose}.");
+        }
+
+        public Logger(string name, bool verbose, bool time)
+        {
+            this.Verbose = verbose;
+            this.Time = time;
+            this.Name = name;
+            this.Path = (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + "NafiLog");
+            this.FilePath = CreatePath();
+            IsVerbose($"Initated Logger class with Name = {Name}, Verbose = {Verbose} and Time = {Time}.");
+        }
+
+        public Logger(string name, string path)
+        {
+            this.Verbose = true;
+            this.Time = true;
+            this.Name = name;
+            this.Path = path;
+            this.FilePath = CreatePath();
+            IsVerbose($"Initated Logger class with Name = {Name} and Path = {Path}.");
+        }
+
+        public Logger(string name, string path, bool verbose)
+        {
+            this.Verbose = verbose;
+            this.Time = true;
+            this.Name = name;
+            this.Path = path;
+            this.FilePath = CreatePath();
+            IsVerbose($"Initated Logger class with Name = {Name}, Path = {Path}, and Verbose = {Verbose}.");
+        }
+
+        public Logger(string name, string path, bool verbose, bool time)
+        {
+            this.Verbose = verbose;
+            this.Time = time;
+            this.Name = name;
+            this.Path = path;
+            this.FilePath = CreatePath();
+            IsVerbose($"Initated Logger class with Name = {Name}, Path = {Path}, Verbose = {Verbose} and Time = {Time}.");
+        }
+
+        public int Log(string message)
+        {
+            if (File.Exists(FilePath))
+            {
+                try
+                {
+                    IsVerbose($"Attempting to write \"{message}\" to {FilePath}...");
+                    using (StreamWriter sw = File.AppendText(FilePath))
+                        sw.WriteLine(AddTime(message));
+                    IsVerbose($"Success: Wrote {message} to {FilePath}");
+                }
+                catch
+                {
+                    IsVerbose($"Error: Could not write message to {FilePath}.");
+                    return LOG_RETURN_BAD;
+                }
+                return LOG_RETURN_GOOD;
+            }
+            else
+                IsVerbose($"Error: {FilePath} does not Exist.");
+            return LOG_RETURN_BAD;
+        }
+
+        private void IsVerbose(string message)
+        {
+            if (Verbose)
+                Console.WriteLine(AddTime(message));
+        }
+
+        private string AddTime(string message)
+        {
+            string formattedMessage = message;
+            if (Time)
+                formattedMessage = $"{DateTime.Now} :: " + message;
+            return formattedMessage;
+        }
+
+        private string CreatePath()
+        {
+            string errorMessage;
+            string filepath;
+
+            if (Path == null)
+            {
+                errorMessage = "Error: Logger.Path";
+                if (Name == null)
+                    errorMessage += " and Logger.Name";
+                errorMessage += " must be defined.";
+                IsVerbose(errorMessage);
+                return null;
+            }
+            else if (Name == null)
+            {
+                IsVerbose("Logger.Name must be defined.");
+                return null;
+            }
+            else
+                IsVerbose($"Success: Logger.Path = {Path}, Logger.Name = {Name}");
+
+            if (!Directory.Exists(Path))
+            {
+                IsVerbose($"Error: {Path} not found.");
+                try
+                {
+                    IsVerbose($"Attempting to create {Path}...");
+                    Directory.CreateDirectory(Path);
+                }
+                catch
+                {
+                    IsVerbose($"Error: Could not create {Path}");
+                    return null;
+                }
+                IsVerbose($"Success: {Path} has been created");
+            }
+
+            filepath = Path + "\\" + Name;
+
+            if (!File.Exists(filepath))
+            {
+                IsVerbose($"Error: {filepath} does not exist.");
+                try
+                {
+                    IsVerbose($"Attempting to create {filepath}...");
+                    var createdFile = File.Create(filepath);
+                    createdFile.Close();
+                }
+                catch
+                {
+                    IsVerbose($"Error: Could not create {filepath}");
+                    return null;
+                }
+                IsVerbose($"Success: {filepath} has been created");
+            }
+            return filepath;
+        }
+    }
+}

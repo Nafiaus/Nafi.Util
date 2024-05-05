@@ -1,4 +1,4 @@
-namespace Nafi
+namespace Nafi.Twitch
 {
     public class TwitchChatMessage
     {

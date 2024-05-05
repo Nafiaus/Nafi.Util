@@ -3,9 +3,9 @@ using System.IO;
 using System.Threading;
 using System.Net.Sockets;
 
-namespace Nafi
+namespace Nafi.Twitch
 {
-    public class Twitch
+    public class TwitchBot
     {
         bool exit = false;
         string channel;
@@ -17,7 +17,7 @@ namespace Nafi
 
         Thread pingThread;
 
-        public Twitch(string oauth_token, string channel, string nickname)
+        public TwitchBot(string oauth_token, string channel, string nickname)
         {
             this.channel = channel;
             this.nickname = nickname;

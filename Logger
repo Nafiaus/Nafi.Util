@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Nafi
+namespace Nafi.Util
 {
     public class Logger
     {
